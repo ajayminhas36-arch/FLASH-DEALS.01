@@ -1,0 +1,163 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Fields: uid, name, email, phone, address, totalSpending
+    //
+    // Collection: products
+    // Fields: name, description, originalPrice, discountedPrice, stock, isActive, image, category
+    //
+    // Collection: requests
+    // Fields: userId, productId, status, timestamp
+    //
+    // Collection: orders
+    // Fields: userId, productId, price, status, timestamp, productDetails
+    //
+    // Collection: reels
+    // Fields: title, videoUrl, productId, category, timestamp
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (
+          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+           get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+          (request.auth.token.email == "ajayminhas36@gmail.com" || request.auth.token.email == "meenaenterprises973@gmail.com")
+        );
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    function isValidUser(data) {
+      return hasRequiredFields(['uid', 'email']) &&
+             data.uid == request.auth.uid &&
+             isValidEmail(data.email) &&
+             (!('name' in data) || data.name is string) &&
+             (!('phone' in data) || data.phone is string) &&
+             (!('address' in data) || data.address is string) &&
+             (!('totalSpending' in data) || data.totalSpending is number);
+    }
+
+    function isValidProduct(data) {
+      return hasRequiredFields(['name', 'originalPrice', 'stock', 'isActive']) &&
+             data.name is string && data.name.size() < 100 &&
+             data.originalPrice is number && data.originalPrice >= 0 &&
+             data.stock is number && data.stock >= 0 &&
+             data.isActive is bool;
+    }
+
+    function isValidRequest(data) {
+      return hasRequiredFields(['userId', 'productId', 'status', 'timestamp']) &&
+             data.userId == request.auth.uid &&
+             data.status in ['pending', 'approved', 'rejected'] &&
+             data.timestamp is string;
+    }
+
+    function isValidOrder(data) {
+      return hasRequiredFields(['userId', 'productId', 'price', 'status', 'timestamp', 'address', 'city', 'pincode', 'phone', 'paymentMethod', 'quantity']) &&
+             data.userId == request.auth.uid &&
+             data.status in ['placed', 'processing', 'dispatched', 'delivered'] &&
+             data.price is number && data.price >= 0 &&
+             data.address is string && data.address.size() > 0 &&
+             data.city is string && data.city.size() > 0 &&
+             data.pincode is string && data.pincode.size() > 0 &&
+             data.phone is string && data.phone.size() > 0 &&
+             data.paymentMethod in ['COD', 'Online'] &&
+             data.quantity is number && data.quantity > 0;
+    }
+
+    function isValidSupportMessage(data) {
+      return hasRequiredFields(['name', 'email', 'message', 'timestamp']) &&
+             data.name is string && data.name.size() > 0 &&
+             isValidEmail(data.email) &&
+             data.message is string && data.message.size() > 0 &&
+             data.timestamp is string;
+    }
+
+    function isValidReel(data) {
+      return hasRequiredFields(['title', 'videoUrl', 'timestamp']) &&
+             data.title is string && data.title.size() > 0 &&
+             data.videoUrl is string && data.videoUrl.size() > 0 &&
+             data.timestamp is string;
+    }
+
+    function isValidBanner(data) {
+      return hasRequiredFields(['title', 'image', 'timestamp']) &&
+             data.title is string && data.title.size() > 0 &&
+             data.image is string && data.image.size() > 0 &&
+             data.timestamp is string &&
+             (!('subtitle' in data) || data.subtitle is string) &&
+             (!('badge' in data) || data.badge is string);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if (isOwner(userId) && isValidUser(request.resource.data)) || isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidProduct(request.resource.data);
+    }
+
+    match /requests/{requestId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated() && isValidRequest(request.resource.data);
+      allow update: if isAdmin() || (isAuthenticated() && request.auth.uid == resource.data.userId && request.resource.data.status == resource.data.status);
+    }
+
+    match /orders/{orderId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated() && isValidOrder(request.resource.data);
+      allow update: if isAdmin();
+    }
+
+    match /support_messages/{messageId} {
+      allow read: if isAdmin();
+      allow create: if isAuthenticated() && isValidSupportMessage(request.resource.data);
+    }
+
+    match /reels/{reelId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidReel(request.resource.data);
+    }
+
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidBanner(request.resource.data);
+    }
+  }
+}

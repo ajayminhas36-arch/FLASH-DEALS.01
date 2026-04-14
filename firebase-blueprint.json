@@ -1,0 +1,140 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "name": { "type": "string", "description": "Full name" },
+        "email": { "type": "string", "format": "email", "description": "Email address" },
+        "phone": { "type": "string", "description": "Phone number" },
+        "address": { "type": "string", "description": "Shipping address" },
+        "totalSpending": { "type": "number", "description": "Total amount spent" },
+        "role": { "type": "string", "enum": ["admin", "user"] },
+        "avatarUrl": { "type": "string", "description": "Selected avatar URL" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "E-commerce product",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "originalPrice": { "type": "number" },
+        "discountedPrice": { "type": "number" },
+        "stock": { "type": "number" },
+        "isActive": { "type": "boolean", "description": "True if it's a flash deal" },
+        "image": { "type": "string", "format": "uri" },
+        "category": { "type": "string" },
+        "timer": { "type": "string", "description": "Flash sale end time" }
+      },
+      "required": ["name", "originalPrice", "stock", "isActive"]
+    },
+    "Request": {
+      "title": "Request",
+      "description": "Price request for locked products",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "productId": { "type": "string" },
+        "productName": { "type": "string" },
+        "productImage": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "productId", "status", "timestamp"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Product order",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "productId": { "type": "string" },
+        "price": { "type": "number" },
+        "status": { "type": "string", "enum": ["placed", "processing", "dispatched", "delivered"] },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "productDetails": { "type": "object" },
+        "address": { "type": "string" },
+        "city": { "type": "string" },
+        "pincode": { "type": "string" },
+        "phone": { "type": "string" },
+        "paymentMethod": { "type": "string", "enum": ["COD", "Online"] },
+        "quantity": { "type": "number" }
+      },
+      "required": ["userId", "productId", "price", "status", "timestamp", "address", "city", "pincode", "phone", "paymentMethod", "quantity"]
+    },
+    "SupportMessage": {
+      "title": "SupportMessage",
+      "description": "User support contact message",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "message": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string" }
+      },
+      "required": ["name", "email", "message", "timestamp"]
+    },
+    "FlashReel": {
+      "title": "FlashReel",
+      "description": "Short video reel",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "videoUrl": { "type": "string", "format": "uri" },
+        "productId": { "type": "string" },
+        "category": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "videoUrl", "timestamp"]
+    },
+    "Banner": {
+      "title": "Banner",
+      "description": "Hero section banner slider",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "image": { "type": "string", "format": "uri" },
+        "badge": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "image", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Product catalog"
+    },
+    "/requests/{requestId}": {
+      "schema": "Request",
+      "description": "Price requests"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Customer orders"
+    },
+    "/support_messages/{messageId}": {
+      "schema": "SupportMessage",
+      "description": "Support contact messages"
+    },
+    "/reels/{reelId}": {
+      "schema": "FlashReel",
+      "description": "Short video reels"
+    },
+    "/banners/{bannerId}": {
+      "schema": "Banner",
+      "description": "Hero section banners"
+    }
+  }
+}
