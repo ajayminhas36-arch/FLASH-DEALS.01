@@ -12,7 +12,7 @@ You must add the following environment variables in your Vercel Project Settings
 - Go to the [Firebase Console](https://console.firebase.google.com/).
 - Select your project.
 - Go to **Authentication** > **Settings** > **Authorized Domains**.
-- Add your Vercel deployment domain (e.g., `your-app.vercel.app`) to the list. This is required for Google Login to work.
+- Add your Vercel deployment domain (`flash-deals-01.vercel.app`) to the list. This is required for Google Login to work.
 
 ## 3. Deployment
 - Connect your GitHub repository to Vercel.
