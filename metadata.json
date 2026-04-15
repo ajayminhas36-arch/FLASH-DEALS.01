@@ -1,5 +1,7 @@
 {
   "name": "FlashDeal Mobile",
   "description": "A modern mobile e-commerce app for daily flash sales with exclusive deals and price request system.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "y7": [],
+  "Yp": []
 }

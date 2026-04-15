@@ -12,6 +12,7 @@ import { Input } from '../components/ui/input';
 import { cn } from '../lib/utils';
 import HeroCarousel from '../components/HeroCarousel';
 import FlashReels from '../components/FlashReels';
+import ProductCard from '../components/ProductCard';
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -134,67 +135,8 @@ export default function Home() {
           {isInitialLoading ? (
             <FlashDealSkeleton />
           ) : flashDeals.length > 0 ? (
-            flashDeals.map((product) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <Link to={`/product/${product.id}`}>
-                  <motion.div
-                    whileHover={{ y: -12, scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  >
-                    <Card className="overflow-hidden border-none shadow-premium bg-white group relative rounded-[40px] hover:shadow-[0_20px_50px_rgba(255,106,0,0.15)] transition-all duration-500">
-                      <div className="relative aspect-[16/9] overflow-hidden">
-                        <img 
-                          src={product.image} 
-                          alt={product.name} 
-                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
-                        
-                        {/* Discount Tag */}
-                        <div className="absolute top-5 left-5 flex flex-col gap-2">
-                          <Badge className="bg-orange-gradient text-white border-none px-4 py-1.5 font-black shadow-orange-glow text-[11px] rounded-xl">
-                            {Math.round((1 - product.discountedPrice! / product.originalPrice) * 100)}% OFF
-                          </Badge>
-                          <div className="glass px-3 py-1 rounded-xl text-orange-600 text-[10px] font-black flex items-center gap-1.5">
-                            <Flame size={12} fill="currentColor" />
-                            HOT DEAL
-                          </div>
-                        </div>
-
-                        {/* Stock Label */}
-                        <div className={cn(
-                          "absolute bottom-5 right-5 glass-dark px-4 py-2 rounded-2xl text-[10px] font-black text-white flex items-center gap-2",
-                          product.stock <= 5 && "animate-shake border-orange-500/50"
-                        )}>
-                          <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(249,115,22,0.8)]" />
-                          ONLY {product.stock} LEFT
-                        </div>
-                      </div>
-                      <CardContent className="p-8">
-                        <div className="flex justify-between items-end mb-6">
-                          <div className="space-y-1">
-                            <span className="text-[10px] font-black text-orange-500 uppercase tracking-[0.2em]">{product.category}</span>
-                            <h3 className="font-black text-2xl leading-tight text-neutral-900 group-hover:text-orange-600 transition-colors">{product.name}</h3>
-                          </div>
-                          <div className="text-right">
-                            <span className="block text-xs text-neutral-400 line-through font-bold mb-1">${product.originalPrice}</span>
-                            <span className="block text-4xl font-black text-orange-600 tracking-tighter">${product.discountedPrice}</span>
-                          </div>
-                        </div>
-                        <Button variant="orange" className="w-full h-16 rounded-[24px] font-black text-xl shadow-orange group-hover:scale-[1.02] transition-transform">
-                          GRAB IT NOW
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                </Link>
-              </motion.div>
+            flashDeals.map((product, index) => (
+              <ProductCard key={product.id} product={product} index={index} />
             ))
           ) : (
             <div className="text-center py-12 bg-neutral-100 rounded-2xl border-2 border-dashed border-neutral-200">
@@ -222,45 +164,8 @@ export default function Home() {
           <OtherProductSkeleton />
         ) : (
           <div className="grid grid-cols-2 gap-4">
-            {otherProducts.map((product) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-              >
-                <Link to={`/product/${product.id}`}>
-                  <motion.div
-                    whileHover={{ y: -8, scale: 1.05 }}
-                    whileTap={{ scale: 0.98 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  >
-                    <Card className="overflow-hidden border-none shadow-premium hover:shadow-[0_15px_35px_rgba(0,0,0,0.1)] transition-all duration-500 bg-white relative group rounded-[28px]">
-                      <div className="relative aspect-square overflow-hidden grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700">
-                        <img 
-                          src={product.image} 
-                          alt={product.name} 
-                          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="absolute inset-0 bg-black/10 backdrop-blur-[2px] flex items-center justify-center group-hover:backdrop-blur-0 group-hover:bg-transparent transition-all duration-500">
-                          <div className="glass p-3 rounded-2xl shadow-xl group-hover:scale-0 transition-transform duration-300">
-                            <Lock size={20} className="text-neutral-400" />
-                          </div>
-                        </div>
-                      </div>
-                      <CardContent className="p-5">
-                        <h3 className="font-black text-sm truncate mb-3 text-neutral-800 group-hover:text-orange-600 transition-colors">{product.name}</h3>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[9px] font-black uppercase tracking-[0.15em] text-neutral-400 group-hover:text-orange-500 transition-colors">Price Locked</span>
-                          <div className="bg-neutral-100 p-2 rounded-xl group-hover:bg-orange-100 group-hover:text-orange-600 transition-all duration-300">
-                            <ArrowRight size={14} />
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                </Link>
-              </motion.div>
+            {otherProducts.map((product, index) => (
+              <ProductCard key={product.id} product={product} index={index} />
             ))}
           </div>
         )}

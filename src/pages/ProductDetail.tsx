@@ -110,7 +110,10 @@ export default function ProductDetail() {
       </div>
 
       {/* Image Gallery */}
-      <div className="relative aspect-square bg-neutral-100">
+      <motion.div 
+        layoutId={`card-${product.id}`}
+        className="relative aspect-square bg-neutral-100 overflow-hidden"
+      >
         {product.videoUrl ? (
           <video 
             src={product.videoUrl} 
@@ -121,7 +124,8 @@ export default function ProductDetail() {
             playsInline
           />
         ) : (
-          <img 
+          <motion.img 
+            layoutId={`image-${product.id}`}
             src={product.image} 
             alt={product.name} 
             className="w-full h-full object-cover"
@@ -133,7 +137,7 @@ export default function ProductDetail() {
             FLASH DEAL
           </Badge>
         )}
-      </div>
+      </motion.div>
 
       {/* Content */}
       <motion.div 
@@ -142,7 +146,12 @@ export default function ProductDetail() {
         transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
         className="p-6 space-y-8 pb-64 -mt-8 bg-white rounded-t-[48px] relative z-10 shadow-[0_-20px_60px_rgba(0,0,0,0.08)]"
       >
-        <div className="space-y-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="space-y-4"
+        >
           <div className="flex justify-between items-start gap-4">
             <div className="space-y-1">
               <span className="text-[10px] font-black text-orange-500 uppercase tracking-[0.2em]">{product.category}</span>
@@ -163,10 +172,15 @@ export default function ProductDetail() {
             </div>
           </div>
           <p className="text-neutral-500 leading-relaxed font-medium">{product.description}</p>
-        </div>
+        </motion.div>
 
         {/* Features */}
-        <div className="grid grid-cols-3 gap-4 py-6 border-y border-neutral-100">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="grid grid-cols-3 gap-4 py-6 border-y border-neutral-100"
+        >
           <div className="flex flex-col items-center text-center gap-2">
             <div className="w-12 h-12 rounded-2xl bg-green-50 flex items-center justify-center text-green-600">
               <ShieldCheck size={24} />
@@ -185,13 +199,18 @@ export default function ProductDetail() {
             </div>
             <span className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">7 Days Return</span>
           </div>
-        </div>
+        </motion.div>
 
         {/* Stock Info */}
-        <div className={cn(
-          "bg-neutral-50 p-5 rounded-[24px] flex justify-between items-center border border-neutral-100",
-          product.stock <= 5 && product.stock > 0 && "animate-shake border-orange-200 bg-orange-50/30"
-        )}>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className={cn(
+            "bg-neutral-50 p-5 rounded-[24px] flex justify-between items-center border border-neutral-100",
+            product.stock <= 5 && product.stock > 0 && "animate-shake border-orange-200 bg-orange-50/30"
+          )}
+        >
           <div className="flex items-center gap-3">
             <div className={cn(
               "w-3 h-3 rounded-full animate-pulse",
@@ -206,7 +225,7 @@ export default function ProductDetail() {
           )}>
             {product.stock > 0 ? `${product.stock} Units Left` : 'Out of Stock'}
           </span>
-        </div>
+        </motion.div>
       </motion.div>
 
       {/* Footer Action */}

@@ -33,7 +33,7 @@ export default function Layout() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto pt-16 pb-24 scrollbar-hide relative">
+      <main className="flex-1 overflow-y-auto pt-16 pb-24 scrollbar-hide relative [perspective:1000px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}

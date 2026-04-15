@@ -6,6 +6,7 @@ To deploy this application to Vercel, follow these steps:
 You must add the following environment variables in your Vercel Project Settings:
 
 - `GEMINI_API_KEY`: Your Google Gemini API Key.
+- `VITE_GEMINI_API_KEY`: (Optional) If you want to use the key on the frontend (current implementation).
 - `APP_URL`: The URL of your deployed Vercel app (e.g., `https://your-app.vercel.app`).
 
 ## 2. Firebase Configuration
