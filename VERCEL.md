@@ -24,4 +24,14 @@ You must add the following environment variables in your Vercel Project Settings
 - The output directory should be `dist`.
 
 ## 4. Security
-The chatbot now uses a server-side integration via `/api/chat.ts`. This ensures your `GEMINI_API_KEY` is never exposed to the browser, making the application production-ready and secure.
+## 5. Troubleshooting: "Repository does not contain the requested branch"
+If you see this error in Vercel or GitHub:
+- **Empty Repository**: This usually means the code hasn't been pushed to the repository yet. If you are using the AI Studio "Export to GitHub" feature, ensure the export process completed successfully.
+- **Branch Name**: Ensure your Vercel project is looking for the correct branch (usually `main`). You can check this in Vercel under **Settings > Git > Production Branch**.
+- **Manual Push**: If you are pushing manually, ensure you have run:
+  ```bash
+  git add .
+  git commit -m "Initial commit"
+  git branch -M main
+  git push -u origin main
+  ```

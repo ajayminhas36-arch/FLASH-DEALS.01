@@ -1,20 +1,18 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# FlashDeal Mobile E-commerce
 
-# Run and deploy your AI Studio app
+A modern, high-performance e-commerce mobile application built with React, Tailwind CSS, and Framer Motion.
 
-This contains everything you need to run your app locally.
+## Features
+- **Smooth Animations**: Premium feel with staggered motion, shared element transitions, and micro-interactions.
+- **Full-Stack Architecture**: Secure server-side Gemini AI integration.
+- **Firebase Integration**: Real-time Firestore database and Google Authentication.
+- **Responsive Design**: Optimized for a mobile-first experience.
 
-View your app in AI Studio: https://ai.studio/apps/c0ece724-f7b3-4446-a454-05418b9a1f39
+## Deployment on Vercel
+For detailed deployment instructions, please refer to [VERCEL.md](./VERCEL.md).
 
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Setup
+1. Clone the repository.
+2. Install dependencies: `npm install`.
+3. Set up environment variables in `.env` (see `.env.example`).
+4. Run development server: `npm run dev`.
