@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Bot, User, Sparkles, Trash2 } from 'lucide-react';
-import { GoogleGenAI } from "@google/genai";
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { ScrollArea } from './ui/scroll-area';
@@ -9,7 +8,6 @@ import { cn } from '../lib/utils';
 import { dataService } from '../services/dataService';
 import { auth } from '../lib/firebase';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 interface Message {
   role: 'user' | 'bot';
@@ -51,21 +49,24 @@ export default function Chatbot() {
         }).catch(err => console.error("Failed to log chat:", err));
       }
 
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: userMessage,
-        config: {
-          systemInstruction: `You are the "Flash Assistant" for FlashDeal, a premium e-commerce app. 
-          Your tone MUST be extremely polite, helpful, and respectful. 
-          Always address the user as "sir" or "madam". 
-          NEVER say "I am not available" or "I cannot do this". Instead, say "I will certainly try my best to assist you with that, sir/madam" or "Let me guide you to the right place, sir/madam".
-          After answering any question, you MUST suggest that they check out our latest products and flash deals.
-          Example: "I hope that helps you, sir/madam! Please do take a look at our amazing new products in the home section."
-          Keep responses concise and professional.`,
-        },
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage,
+          history: messages.map(m => ({
+            role: m.role === 'bot' ? 'model' : 'user',
+            parts: [{ text: m.content }]
+          }))
+        })
       });
 
-      const botResponse = response.text || "I will certainly look into that for you, sir/madam. How else may I assist you today?";
+      if (!response.ok) {
+        throw new Error('Failed to fetch from AI server');
+      }
+
+      const data = await response.json();
+      const botResponse = data.text || "I will certainly look into that for you, sir/madam. How else may I assist you today?";
       setMessages(prev => [...prev, { role: 'bot', content: botResponse }]);
     } catch (error) {
       console.error("Chatbot error:", error);
